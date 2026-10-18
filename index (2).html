@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101c26">
+<title>Папе от сына 🏅</title>
+<style>
+:root{--bg:#101c26;--gold:#e8b84a;--gold2:#f6d98a;--card:#1b2b38;--ink:#f3ead7;--soft:#b9c3c9}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 80% 0,#2a4a5c 0,transparent 45%),radial-gradient(circle at 0 100%,#3a2f1a 0,transparent 40%),var(--bg);font-family:system-ui,sans-serif;color:var(--ink);overflow-x:hidden}
+.card{width:min(100%,440px);background:var(--card);border:1px solid #34495a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 22px 60px #0009,inset 0 0 0 4px #1b2b38,inset 0 0 0 5px #3d5365;overflow:hidden}
+.stars{min-height:1.6em;font-size:1.1rem;letter-spacing:.2em;color:var(--gold)}
+.kicker{font-size:.72rem;letter-spacing:.22em;color:var(--gold);font-weight:700}
+h1{font:700 clamp(1.8rem,7.5vw,2.5rem)/1.1 Georgia,serif;margin:12px 0;color:var(--gold2)}
+h2{font:700 1.3rem Georgia,serif;margin:10px 0;color:var(--gold2)}
+p{line-height:1.6;color:var(--soft);margin:10px 0}
+.icon{font-size:66px;margin:8px 0;user-select:none}
+button{font:700 1rem system-ui,sans-serif;border:0;border-radius:12px;padding:14px 20px;min-height:48px;cursor:pointer;transition:transform .15s;max-width:100%}
+button:active{transform:scale(.96)}
+.go{background:linear-gradient(180deg,#f3cb62,#d9a533);color:#2a2008;box-shadow:0 5px 0 #8f6a17}
+.actions{display:flex;flex-direction:column;gap:10px;margin-top:18px;align-items:center}
+.hidden{display:none!important}
+.hint{min-height:1.5em;font-size:.9rem;color:var(--gold);margin:10px 0 0}
+.stage{height:120px;display:grid;place-items:center;margin:6px 0}
+.big{font-size:96px;display:inline-block;transition:transform .25s;user-select:none}
+.bar{height:14px;background:#0e1820;border-radius:99px;overflow:hidden;margin:10px 0 4px;border:1px solid #34495a}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#d9a533,#f6d98a);transition:width .2s}
+.cert{margin:16px 0;padding:18px 14px;border-radius:14px;background:linear-gradient(135deg,#f6e3a8,#e8b84a);color:#3a2a08;font-family:Georgia,serif;box-shadow:0 8px 24px #0006}
+.cert small{letter-spacing:.2em;font-size:.65rem;font-weight:700}
+.cert big{display:block;font-size:1.35rem;font-weight:700;margin:6px 0}
+.letter{text-align:left;background:#0e1820;border-radius:14px;padding:16px;font-size:.98rem;line-height:1.6;color:var(--ink)}
+.pop{animation:pop .5s}
+@keyframes pop{50%{transform:scale(1.25) rotate(-6deg)}}
+.conf{position:fixed;top:-30px;pointer-events:none;font-size:22px;animation:fall 2.8s ease-in forwards;z-index:5}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.conf,.pop{animation:none}}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="stars" id="stars"></div>
+
+  <section id="s0">
+    <div class="icon pop">🏅</div>
+    <div class="kicker">ТОЛЬКО ДЛЯ ОДНОГО ЧЕЛОВЕКА</div>
+    <h1>Папа,<br>у меня для тебя миссия</h1>
+    <p>В День отца я подготовил небольшое испытание. Пройди 4 уровня, собери все звёзды и получи награду.</p>
+    <div class="actions"><button class="go" onclick="start()">Принять миссию</button></div>
+  </section>
+
+  <section id="sg" class="hidden">
+    <div class="kicker" id="gk"></div>
+    <h2 id="gt"></h2>
+    <p id="gp"></p>
+    <div class="stage"><div class="big" id="gi"></div></div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="actions"><button class="go" id="gb" onclick="tap()"></button></div>
+    <p class="hint" id="gh"></p>
+  </section>
+
+  <section id="s5" class="hidden">
+    <div class="icon pop">🏆</div>
+    <h1>Миссия выполнена!</h1>
+    <div class="cert"><small>СЕРТИФИКАТ</small><big>Лучший папа на свете</big><small id="date"></small></div>
+    <div class="letter" id="letter"></div>
+  </section>
+</main>
+
+<script>
+/* Тексты можно менять здесь */
+const SON='Кирилл';
+const LETTER='Папа, спасибо тебе за то, что ты рядом: учишь, поддерживаешь и не даёшь сдаваться. Если я чему-то хорошему и научился, то во многом у тебя. С Днём отца! Люблю тебя. Твой сын '+SON+'.';
+const LEVELS=[
+ {icon:'⚙️',title:'Закрути гайку',text:'Нажимай, пока не затянешь.',btn:'Крутить 🔧',taps:8,anim:'rotate',msgs:['Идёт туго…','Пошло!','Ещё чуть-чуть','Резьба как новая','Почти затянул','Последний поворот','Это мастер-класс'],done:'Затянуто намертво'},
+ {icon:'🚗',title:'Заведи мотор',text:'Жми на газ, пока не поедет.',btn:'Газ! 💨',taps:10,anim:'drive',msgs:['Бр-р-р…','Чихнул','Завёлся!','Поехали','Набирает ход','Ветер в окно','Тормоза не нужны','Почти на месте','Финишная прямая'],done:'Приехали с ветерком'},
+ {icon:'🔨',title:'Забей гвоздь',text:'Несколько точных ударов.',btn:'Бить 🔨',taps:6,anim:'bang',msgs:['Раз!','Крепче держи','Ровно пошёл','Ещё удар','Шляпка почти внутри'],done:'Забит с первого раза'},
+ {icon:'🎁',title:'Открой подарок',text:'Нажимай, пока не откроется.',btn:'Открыть 🎁',taps:5,anim:'grow',msgs:['Трясётся…','Что-то внутри','Почти открылся','Совсем чуть-чуть'],done:'Подарок открыт'}
+];
+const $=id=>document.getElementById(id);
+let lv=0,n=0,stars=0,busy=false;
+function drawStars(){$('stars').textContent=stars?'⭐'.repeat(stars)+'·'.repeat(4-stars):''}
+function show(id){document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));$(id).classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'})}
+function confetti(k){const e=['🎉','✨','⭐','🏅','💛'];for(let i=0;i<(k||16);i++){const c=document.createElement('span');c.className='conf';c.textContent=e[i%e.length];c.style.left=Math.random()*100+'vw';c.style.animationDelay=Math.random()*.7+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),3800)}}
+function load(){
+  const L=LEVELS[lv];n=0;busy=false;
+  $('gk').textContent='УРОВЕНЬ '+(lv+1)+' ИЗ '+LEVELS.length;
+  $('gt').textContent=L.title;$('gp').textContent=L.text;$('gi').textContent=L.icon;$('gi').style.transform='none';
+  $('gb').textContent=L.btn;$('bar').style.width='0';$('gh').textContent='';
+  show('sg');
+}
+function start(){load()}
+function tap(){
+  if(busy)return;
+  const L=LEVELS[lv];n++;const p=n/L.taps,g=$('gi');
+  $('bar').style.width=Math.min(100,p*100)+'%';
+  if(L.anim==='rotate')g.style.transform='rotate('+n*50+'deg)';
+  if(L.anim==='drive')g.style.transform='translateX('+Math.min(110,p*110)+'px)';
+  if(L.anim==='bang'){g.style.transform='rotate(-25deg) translateY(-8px)';setTimeout(()=>g.style.transform='rotate(15deg) translateY(6px)',120)}
+  if(L.anim==='grow')g.style.transform='scale('+(1+p*.45).toFixed(2)+') rotate('+(n%2?-8:8)+'deg)';
+  if(n>=L.taps){
+    busy=true;stars++;drawStars();confetti(14);
+    $('gh').textContent=L.done+'. Звезда '+stars+' ⭐';
+    if(L.anim==='grow')g.textContent='🎉';
+    setTimeout(()=>{lv++;lv>=LEVELS.length?final():load()},1300);return;
+  }
+  $('gh').textContent=L.msgs[Math.min(n-1,L.msgs.length-1)];
+}
+function final(){
+  $('letter').textContent=LETTER;
+  $('date').textContent=new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  show('s5');confetti(40);
+}
+</script>
+</body>
+</html>
